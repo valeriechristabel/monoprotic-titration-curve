@@ -116,9 +116,8 @@ def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
     return volumes, np.array(pH_list)
 
 
-# ----------------------------
 # Main interactive app
-# ----------------------------
+
 def make_titration_app():
     # Initial parameters
     analyte_type = "weak_acid"
@@ -150,9 +149,9 @@ def make_titration_app():
     # pH=7 horizontal line for strong/strong
     pH7_line = ax.axhline(7.0, linestyle="--", linewidth=1.0, color="gray", visible=False)
 
-    # ----------------------------
+ 
     # UI axes (short sliders)
-    # ----------------------------
+
     axcolor = "lightgoldenrodyellow"
     slider_h = 0.03
     pad_left = 0.30
@@ -179,9 +178,8 @@ def make_titration_app():
     bax = plt.axes([0.03, 0.42, 0.12, 0.04])
     button_reset = Button(bax, "Reset", color=axcolor, hovercolor='0.9')
 
-    # ----------------------------
     # Toggle Ka/Kb visibility
-    # ----------------------------
+
     def toggle_ka_kb_visibility():
         atype = radio_analyte.value_selected
         ttype = radio_titrant.value_selected
@@ -195,9 +193,8 @@ def make_titration_app():
 
     toggle_ka_kb_visibility()
 
-    # ----------------------------
     # Update function
-    # ----------------------------
+
     def update_plot(event=None):
         atype = radio_analyte.value_selected
         ttype = radio_titrant.value_selected
@@ -226,9 +223,9 @@ def make_titration_app():
         ax.autoscale_view(scalex=False, scaley=False)
         fig.canvas.draw_idle()
 
-    # ----------------------------
+
     # Connect widgets
-    # ----------------------------
+
     s_concA.on_changed(update_plot)
     s_volA.on_changed(update_plot)
     s_concT.on_changed(update_plot)

@@ -191,17 +191,20 @@ Acknowledgement of GPT use
 
 ## Modifications, Enhancements, and Attribution 
 
-Base ideas from references
-- Chemical theory (Henderson–Hasselbalch, equilibrium hydrolysis approximations, neutralization stoichiometry) are standard textbook material; these are the theoretical foundations used.
+The program is based on standard chemistry principles from textbooks, Cengage. 
+- Neutralization stoichiometry: H⁺ + OH⁻ → H₂O  
+- Weak acid/base equilibria: HA ⇌ H⁺ + A⁻, B + H⁺ ⇌ BH⁺  
+- Henderson–Hasselbalch equation for buffer regions  
+- Hydrolysis approximation at equivalence: [OH⁻] ≈ √(Kb × [A⁻]) or [H⁺] ≈ √(Ka × [BH⁺])
 
 My contributions / modifications
 - Implementation of a flexible, single function `acid_base_titration(...)` that covers all main analyte/titrant types with branch logic.
 - Interactive Matplotlib UI (`make_titration_app`) with:
-  - Sliders for concentrations and volumes.
-  - Log-scale sliders for Ka/Kb.
-  - Radio buttons for analyte/titrant selection and dynamic control visibility.
-  - Color-mapped scatter with line trace and autoscaling.
-  - Reset button and efficient plot updates by mutating artists.
+  - Sliders for concentrations and volumes, remove the input output.
+  - Log-scale sliders for Ka/Kb for weak species
+  - Radio buttons for analyte/titrant selection with dynamic control visibility.
+  - Color-mapped scatter with line trace for pH curves
+  - Reset button for quick return to defaults
 - Numerical robustness:
   - safe_log10 clamping, pH clipping, and tolerances for equivalence detection.
 - Practical UX touches:
@@ -211,8 +214,8 @@ My contributions / modifications
 - Documented the code and made it self-contained to be easily run by learners.
 
 Which parts were changed from reference material
-- The theoretical formulas are from standard chemistry sources (Henderson–Hasselbalch, Ka/Kb relationships). The code-level implementation, UI design, numerical guards, and plotting details are original contributions by the author.
-
+- The code implementation, UI design, numeric guards, plotting, and interactivity are original contributions by the author.  
+- Any suggestions from ChatGPT were adapted and enhanced with numeric safeguards, UI polish, and behavior tuning.
 - Any suggestions drawn from ChatGPT were adapted and implemented with additional numeric safeguards, UI polish, and behavior tuning.
 
 Detailed list of enhancements (why they were made)
@@ -220,7 +223,12 @@ Detailed list of enhancements (why they were made)
 - Color mapping by pH: Improves immediate visual interpretation of regions (acidic vs basic).
 - Numeric guards: Prevent runtime errors (log(0), divide-by-zero) when exploring extreme parameter ranges.
 - Dynamic UI visibility: Reduces confusion by only presenting Ka/Kb when applicable.
-- Approximate hydrolysis computations at equivalence: Gives instant, reasonable equivalence pH estimates for weak analytes without a full nonlinear solve (practical for an interactive demo).
+- Approximate hydrolysis computations at equivalence: When a weak acid is titrated with a strong base, at the equivalence point all the weak acid has reacted, forming its conjugate base. This conjugate base reacts slightly with water, producing OH⁻ ions, making the solution basic.
+
+Similarly, when a weak base is titrated with a strong acid, the conjugate acid forms H⁺ ions, making the solution acidic.
+
+Calculating the exact pH would require solving a complex equilibrium equation for every titrant volume, which is slow and impractical for an interactive program.
+The program approximates the pH at the equivalence point using a simple square-root formula instead of solving the full equilibrium equation. This keeps the simulation smooth, responsive, and educational.
 
 ---
 
