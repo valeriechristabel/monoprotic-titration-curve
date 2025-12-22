@@ -2,9 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, RadioButtons, Button
 
-# ----------------------------
 # Titration calculation logic
-# ----------------------------
 def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
                         analyte_type="weak_acid", titrant_type="strong_base",
                         Ka=1e-5, Kb=1e-5,
@@ -117,7 +115,6 @@ def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
 
 
 # Main interactive app
-
 def make_titration_app():
     # Initial parameters
     analyte_type = "weak_acid"
@@ -151,7 +148,6 @@ def make_titration_app():
 
  
     # UI axes (short sliders)
-
     axcolor = "lightgoldenrodyellow"
     slider_h = 0.03
     pad_left = 0.30
@@ -179,7 +175,6 @@ def make_titration_app():
     button_reset = Button(bax, "Reset", color=axcolor, hovercolor='0.9')
 
     # Toggle Ka/Kb visibility
-
     def toggle_ka_kb_visibility():
         atype = radio_analyte.value_selected
         ttype = radio_titrant.value_selected
@@ -194,7 +189,6 @@ def make_titration_app():
     toggle_ka_kb_visibility()
 
     # Update function
-
     def update_plot(event=None):
         atype = radio_analyte.value_selected
         ttype = radio_titrant.value_selected
@@ -225,7 +219,6 @@ def make_titration_app():
 
 
     # Connect widgets
-
     s_concA.on_changed(update_plot)
     s_volA.on_changed(update_plot)
     s_concT.on_changed(update_plot)
