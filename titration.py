@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, RadioButtons, Button
 
-# Titration calculation logic
+# Titration calculation
 def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
                         analyte_type="weak_acid", titrant_type="strong_base",
                         Ka=1e-5, Kb=1e-5,
