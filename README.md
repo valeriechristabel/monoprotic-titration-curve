@@ -307,11 +307,11 @@ Primary References Used:
 - ChatGPT (GPT-4):
   - Used as a development aid to suggest calculation approaches, numerical safeguards, UI improvements, and code structuring.  
   - All suggestions were reviewed, adapted, and implemented with added numeric stability and user interface enhancements.  
+  - GitHub Copilot: Assisted in code completion, suggested syntax and helper functions, especially for plotting and sliders. All code was reviewed and modified by the author for chemical accuracy.
 
 Modifications and Original Contributions: 
-- Code Implementation: The actual calculation function (`acid_base_titration(...)`), UI (`make_titration_app()`), plotting, color mapping, and slider behavior were written by the author.  
+- Code Implementation: The actual calculation function (`acid_base_titration(...)`)
 - Numerical Safeguards: Added `safe_log10`, small equivalence tolerances, and pH clipping for stability.  
-- Interactive Enhancements: Logarithmic Ka/Kb sliders, dynamic visibility, Reset button, and color-coded pH curves.  
 - Hydrolysis Approximations: Implemented a square-root approximation for weak acid/base equivalence points to simplify calculations while keeping chemical realism.  
 
 Summary: 
@@ -319,63 +319,83 @@ The theoretical foundations come from standard chemistry references, while all c
 
 ---
 
-## Modifications, Enhancements, and Attribution 
+## Program Modifications and Enhancements
 
-The program is based on standard chemistry principles from textbooks, Cengage. 
-- Neutralization stoichiometry: H⁺ + OH⁻ → H₂O  
-- Weak acid/base equilibria: HA ⇌ H⁺ + A⁻, B + H⁺ ⇌ BH⁺  
-- Henderson–Hasselbalch equation for buffer regions  
-- Hydrolysis approximation at equivalence: [OH⁻] ≈ √(Kb × [A⁻]) or [H⁺] ≈ √(Ka × [BH⁺])
+To improve both the practicality and distinctiveness of the titration simulator, several modifications and enhancements were made beyond a basic acid–base calculation program. These efforts focus on interactivity, numerical stability, chemical realism, and educational usability.
 
-My contributions / modifications
-- Implementation of a flexible, single function `acid_base_titration(...)` that covers all main analyte/titrant types with branch logic.
-- Interactive Matplotlib UI (`make_titration_app`) with:
-  - Sliders for concentrations and volumes, remove the input output.
-  - Log-scale sliders for Ka/Kb for weak species
-  - Radio buttons for analyte/titrant selection with dynamic control visibility.
-  - Color-mapped scatter with line trace for pH curves
-  - Reset button for quick return to defaults
-- Numerical robustness:
-  - safe_log10 clamping, pH clipping, and tolerances for equivalence detection.
-- Practical UX touches:
-  - Hide Ka/Kb sliders unless relevant.
-  - Show pH=7 guide line for strong/strong titration only.
-  - Increased default point density for smoother curves.
-- Documented the code and made it self-contained to be easily run by learners.
+1. Interactive Parameter Control
 
-Which parts were changed from reference material
-- The code implementation, UI design, numeric guards, plotting, and interactivity are original contributions by the author.  
-- Any suggestions from ChatGPT were adapted and enhanced with numeric safeguards, UI polish, and behavior tuning.
-- Any suggestions drawn from ChatGPT were adapted and implemented with additional numeric safeguards, UI polish, and behavior tuning.
+Instead of requiring users to repeatedly enter numerical values through the console, the program was enhanced with interactive UI sliders for:
+- Analyte concentration and volume  
+- Titrant concentration  
+- Acid/base strength (Ka or Kb)
 
-Detailed list of enhancements (why they were made)
-- Log10 Ka/Kb sliders: Makes it intuitive to adjust dissociation constants spanning many orders of magnitude.
-- Color mapping by pH: Improves immediate visual interpretation of regions (acidic vs basic).
-- Numeric guards: Prevent runtime errors (log(0), divide-by-zero) when exploring extreme parameter ranges.
-- Dynamic UI visibility: Reduces confusion by only presenting Ka/Kb when applicable.
-- Approximate hydrolysis computations at equivalence: When a weak acid is titrated with a strong base, at the equivalence point all the weak acid has reacted, forming its conjugate base. This conjugate base reacts slightly with water, producing OH⁻ ions, making the solution basic.
-
-Similarly, when a weak base is titrated with a strong acid, the conjugate acid forms H⁺ ions, making the solution acidic.
-
-Calculating the exact pH would require solving a complex equilibrium equation for every titrant volume, which is slow and impractical for an interactive program.
-The program approximates the pH at the equivalence point using a simple square-root formula instead of solving the full equilibrium equation. This keeps the simulation smooth, responsive, and educational.
+Ka and Kb sliders were implemented on a logarithmic scale because equilibrium constants span many orders of magnitude in real chemistry. This allows users to intuitively explore how changing acid or base strength affects the titration curve in real time, making the program more practical for learning and demonstrations.
 
 ---
 
-## Limitations and Possible Improvements
+2. Support for Multiple Titration Types
 
-Limitations
-- Uses simplified approximations for weak species at equivalence (sqrt approximation); may be less accurate for very concentrated solutions or when Ka/Kb are extreme.
-- Mono‑protic acids/bases only; polyprotic species are not handled.
-- No activity coefficient / ionic strength corrections.
-- Temperature fixed (Kw = 1e−14) — pH values will differ with temperature changes.
-- No file export (CSV) of computed curves (can be added).
+The program was extended to correctly handle multiple titration systems:
+- Strong acid–strong base  
+- Weak acid–strong base  
+- Weak base–strong acid  
+- Same-type additions (acid + acid, base + base)
 
-Suggested improvements
-- Replace approximate equilibrium steps with a full numerical equilibrium solver (solve mass/balance and charge balance equations with a root finder) for higher accuracy.
-- Support polyprotic acids/bases and mixtures.
-- Add export functionality (CSV/PNG).
-- Add unit tests and automated CI to validate calculation branches.
-- Add a web UI (e.g., using Plotly Dash or Streamlit) for easier distribution.
+This enhancement makes the program more distinctive by allowing users to compare different titration behaviors within a single application.
+
+---
+
+3. Stoichiometry-First Calculation Strategy
+
+The program always performs stoichiometric mole balance calculations before applying equilibrium chemistry:
+1. Calculate initial moles of analyte and added titrant.
+2. Determine which species is in excess.
+3. Identify whether the system is before equivalence, at equivalence, or after equivalence.
+4. Apply the appropriate pH calculation model.
+
+This mirrors real chemical problem-solving and improves both correctness and educational clarity.
+
+---
+
+4. Chemical Realism with Computational Efficiency
+
+To model weak acid and weak base titrations realistically while keeping the program responsive:
+- The Henderson–Hasselbalch equation is used in buffer regions before equivalence.
+- At the equivalence point, hydrolysis approximations are applied using square-root expressions such as  
+  `[OH⁻] ≈ √(Kb × [A⁻])` or `[H⁺] ≈ √(Ka × [BH⁺])`.
+
+These approximations avoid solving complex nonlinear equilibrium equations at every volume step, making the program suitable for interactive use.
+
+---
+
+5. Numerical Stability and Error Prevention
+
+Several numerical safeguards were implemented:
+- A `safe_log10` function prevents logarithm-of-zero errors by clamping very small concentrations.
+- Small tolerance values ensure reliable detection of equivalence points.
+- pH values are clipped to the physically meaningful range of 0–14.
+
+These measures prevent crashes and unphysical outputs when users explore extreme parameter values.
+
+---
+
+6. Visualization and Performance Optimization
+
+To improve visualization quality and performance:
+- The titration curve is color-coded by pH to distinguish acidic, neutral, and basic regions.
+- A pH = 7 reference line is shown for strong acid–strong base titrations.
+- Plot performance is optimized by updating existing line and scatter objects instead of redrawing the entire plot.
+
+This results in smoother real-time updates when parameters are adjusted.
+
+---
+
+7. User Experience Improvements
+
+Additional enhancements include:
+- Dynamic visibility of Ka/Kb sliders based on the selected titration type.
+- A reset button to quickly restore default parameters.
+- Clear separation between chemical calculations, UI logic, and plotting logic for easier maintenance and explanation.
 
 ---
