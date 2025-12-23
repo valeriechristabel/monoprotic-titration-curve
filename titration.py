@@ -7,12 +7,7 @@ def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
                         analyte_type="weak_acid", titrant_type="strong_base",
                         Ka=1e-5, Kb=1e-5,
                         v_min=0, v_max=100, n_points=400):
-    """
-    Return (volumes_mL, pH_values) for given parameters.
-    - conc_* in M, vol_analyte_ml in mL, conc_titrant in M.
-    - analyte_type: 'strong_acid', 'weak_acid', 'strong_base', 'weak_base'
-    - titrant_type: 'strong_acid' or 'strong_base'
-    """
+    
     volumes = np.linspace(v_min, v_max, n_points)
     pH_list = []
 

@@ -1,114 +1,205 @@
 # Project — Interactive Monoprotic Acid‑Base Titration Simulator
 
-## Summary
+## Summary In short
 
 This repository contains an interactive Python program that simulates and visualizes monoprotic acid–base titration curves, where both the analyte and the titrant participate in single-proton acid-base reaction. So it assumes a 1:1 stoichiometric relationship between acid and base. Polyprotic aics, polybasic bases, and titrants that release multiple protons or hydroxide ions per formula unit are not modeled. 
 
 The app computes pH as titrant volume is added to an analyte and provides an interactive Matplotlib-based UI (sliders, radio buttons, color map) so users can explore titrations of strong and weak acids and bases.
 
-Key features
-- Simulates titration curves for combinations of monoprotic strong/weak acids and strong/weak bases.
-- Interactive UI: analyte/titrant selection, concentration/volume sliders, Ka/Kb (log scale) sliders, reset button.
-- Color-coded scatter plot of pH vs titrant volume and optional pH=7 guide line.
-- Numerical safeguards are implemented to ensure stable and physically meaningful pH calculations. These include protection against taking logarithms of zero, avoiding division by zero in buffer equations, constraining calculated pH values to the realistic range of 0–14, and maintaining smooth behavior near equivalence points where concentrations become extremely small.
 ---
 
-## Contents
+## Principles and Functions of the Program
 
-- `titration.py` — the main Python script that performs the pH calculations and launches the interactive titration simulator.
-  - `acid_base_titration(...)`: implements the chemical equations and numerical methods used to calculate pH during titration. It calculates the moles of acid and base, determines whether the system is before, at, or after the equivalence point, and computes pH using strong acid–strong base formulas, the Henderson–Hasselbalch equation for weak acid/base buffer regions, and hydrolysis equations at the equivalence point.
-  - `make_titration_app()`: builds the interactive visualization, including the pH–volume plot and user interface controls such as sliders, radio buttons, and a reset button.
-- `README.md` — documentation describing the principles, usage, program structure, limitations, and enhancements of the program.
+This program simulates monoprotic acid–base titrations using classical stoichiometry and acid–base equilibrium theory.  
+All calculations assume a 1:1 reaction between acid and base, meaning one mole of acid reacts with one mole of base.  
+Polyprotic acids and bases are not modeled.
 
 ---
 
-## Principles and Functions of the Program 
+1. Stoichiometry and Volume 
 
-This program implements approximate acid–base titration calculations using stoichiometry and classical acid–base equilibrium approximations. The code covers four principal analyte/titrant cases:
+Initial moles of analyte:
+n_analyte = C_analyte × V_analyte
 
-- Strong acid titrated with strong base
-- Strong base titrated with strong acid
-- Weak acid titrated with strong base
-- Weak base titrated with strong acid
+Moles of titrant added:
+n_titrant = C_titrant × V_titrant
 
-Chemical principles and equations used:
+Total solution volume:
+V_total = V_analyte + V_titrant
 
-1. Neutralization (strong acid + strong base, instantaneous):
-   - Example: HCl + NaOH → NaCl + H2O
-   - Moles of H+ (from strong acid) and OH− (from strong base) react 1:1. After reaction, excess [H+] or [OH−] is computed by dividing excess moles by total solution volume.
-   - pH = −log10([H+]) for acidic excess.
-   - pOH = −log10([OH−]); pH = 14 − pOH for basic excess.
-   - At exact stoichiometric equivalence pH ≈ 7.0 (assuming Kw = 1×10−14, T ≈ 25 °C).
+Because the system is monoprotic, neutralization always follows:
+H⁺ + OH⁻ → H₂O
 
-2. Weak acid (HA) titration with strong base:
-   - HA ⇌ H+ + A−
-   - Ka = [H+][A−]/[HA]
-   - Buffer region (before equivalence) is modeled using Henderson–Hasselbalch:
-     - pH = pKa + log10([A−]/[HA]) where [A−] formed = moles_titrant; [HA] remaining = moles_initial − moles_titrant
-   - At equivalence (weak acid titrated by strong base), the conjugate base (A−) hydrolyzes:
-     - A− + H2O ⇌ HA + OH−, Kb = Kw / Ka
-     - [OH−] ≈ sqrt(Kb × [A−]) (approximation used by the code)
-     - pH = 14 − pOH where pOH = −log10([OH−])
-  - After equivalence 
-    - [OH−]= mole excess/total volume
-    - pH = 14 − pOH where pOH = −log10([OH−])
+At each added titrant volume, the program determines:
+- which species is in excess,
+- its concentration after dilution,
+- and the resulting pH.
 
-3. Weak base (B) titration with strong acid:
-   - B + H+ ⇌ BH+
-   - Use analogous Henderson–Hasselbalch for pOH:
-     - pOH = pKb + log10([B]/[BH+])
-   - At equivalence BH+ hydrolyzes to produce H+:
-     - BH+ ⇌ B + H+, Ka_eff = Kw / Kb
-     - [H+] ≈ sqrt(Ka_eff × [BH+]) → pH = −log10([H+]) (approximation)
-  - After equivalence, excess H+ from titrant dominates:
-    - [H+] = mole excess/total volume 
-    - pH = −log10([H+])
+---
 
-4. Same-type combinations (analyte and titrant both acidic or both basic) (is not part of the real chemistry titration, to prevent errors only):
-   - The code gracefully handles adding strong acids to acid solutions or strong bases to base solutions by summing contributions to [H+] or [OH−] using simple approximations:
-     - For acids: total [H+] ≈ [H+ from weak/strong analyte] + [H+ from added titrant]
-     - For bases: total [OH−] similarly aggregated.
+2. Strong Acid – Strong Base Titration
 
-Numerical measures and safeguards:
-- All logs use a helper clamp `safe_log10(x)` that prevents computing log(0) by clamping the argument to a small positive floor (1e−20).
-- pH values are clipped to [0, 14] for display stability.
-- Equivalence tests use a small tolerance for floating point comparisons.
+Strong acids and strong bases are assumed to dissociate completely.
 
-Approximations / assumptions
-- Ideal solution behavior (no activity coefficients).
-- Mono‑protic acids/bases only.
-- Temperature fixed at ~25 °C; Kw assumed ≈ 1×10−14.
-- No ionic strength corrections.
-- Approximations like Henderson–Hasselbalch and sqrt-based hydrolysis estimates are used rather than full numerical equilibrium solutions (see Limitations & Improvements).
+Before equivalence (excess H⁺):
+[H⁺] = (n_acid − n_base) / V_total  
+pH = −log₁₀([H⁺])
+
+After equivalence (excess OH⁻):
+[OH⁻] = (n_base − n_acid) / V_total  
+pOH = −log₁₀([OH⁻])  
+pH = 14 − pOH
+
+At equivalence:
+pH ≈ 7 (assuming Kw = 1.0 × 10⁻¹⁴ at 25 °C)
+
+---
+
+3. Weak Acid – Strong Base Titration
+
+Weak acids dissociate partially:
+HA ⇌ H⁺ + A⁻  
+Ka = [H⁺][A⁻] / [HA]
+
+Buffer Region (Before Equivalence)
+Both HA and A⁻ are present, so the Henderson–Hasselbalch equation is used:
+pH = pKa + log₁₀([A⁻]/[HA])
+
+Where:
+- [A⁻] is proportional to moles of base added
+- [HA] is the remaining weak acid
+
+At Equivalence
+All HA has been converted to A⁻.  
+The conjugate base hydrolyzes with water:
+A⁻ + H₂O ⇌ HA + OH⁻
+
+Kb is calculated from:
+Kb = Kw / Ka
+
+Hydroxide concentration is approximated as:
+[OH⁻] ≈ √(Kb × C_A⁻)
+
+Then:
+pOH = −log₁₀([OH⁻])  
+pH = 14 − pOH
+
+This causes the equivalence-point pH to be greater than 7.
+
+---
+
+4. Weak Base – Strong Acid Titration
+Weak bases react as:
+B + H⁺ ⇌ BH⁺  
+Kb = [BH⁺][OH⁻] / [B]
+
+Buffer Region (Before Equivalence)
+The Henderson–Hasselbalch form for bases is used:
+pOH = pKb + log₁₀([B]/[BH⁺])  
+pH = 14 − pOH
+
+At Equivalence
+Only the conjugate acid BH⁺ remains:
+BH⁺ ⇌ B + H⁺
+
+An effective Ka is calculated:
+Ka = Kw / Kb
+
+Hydrogen ion concentration is approximated as:
+[H⁺] ≈ √(Ka × C_BH⁺)
+
+Then:
+pH = −log₁₀([H⁺])
+
+This results in pH < 7 at equivalence.
+
+---
+
+5. Same-Type Additions (Error Prevention)
+Although not true titrations, the program can handle:
+- acid + acid
+- base + base
+
+To prevent numerical errors, concentrations are added directly:
+- Acids: total [H⁺] = analyte contribution + titrant contribution
+- Bases: total [OH⁻] = analyte contribution + titrant contribution
+
+This ensures the program does not crash during invalid input combinations.
+
+---
+
+6. Mathematical and Numerical Safeguards
+
+To ensure stability and smooth visualization:
+- Logarithms are protected using:
+  log₁₀(x) → log₁₀(max(x, 1×10⁻²⁰))
+- pH values are clipped to the range 0–14
+- Small tolerances are used to detect equivalence points reliably
+
+---
+
+7. Purpose of Approximations
+
+Solving full equilibrium equations at every titrant volume requires nonlinear numerical methods and is computationally expensive.
+
+Instead, the program uses:
+- Stoichiometric calculations
+- Henderson–Hasselbalch equations
+- Square-root hydrolysis approximations
+
+These methods are standard in chemistry and provide fast, stable, and educationally meaningful results for an interactive simulator.
 
 ---
 
 ## How to Use It 
 
-Prerequisites
-- Python 3.8+ (recommended)
-- NumPy
-- Matplotlib
+Run the program
+- Execute the Python script
+- A window will open showing a pH vs. titrant volume graph with control panels on the side.
 
-Install dependencies (example)
-- pip install numpy matplotlib
+Select the analyte and the titrant
+- Use the radio buttons to choose:
+  - The analyte (solution in the flask):
+    - strong_acid, weak_acid, strong_base, or weak_base
+  - The titrant (solution being added):
+    - strong_acid, or strong_base
+- The graph immediately updates to show the corresponding titration curve.
 
-Run the interactive app
-- From the repository directory:
-  - python titration.py
-  - (or) python3 titration.py
+Adjust concentrations and volume
+- Use sliders to change:
+  - Analyte concentration (M)
+  - Analyte volume (mL)
+  - Titrant concentration (M)
+- As you move the sliders, the program recalculates:
+  - Initial moles of analyte
+  - Moles of titrant added
+  - Resulting pH at each titrant volume
+- The curve updates in real time, so you can see how each parameter affects the titration.
 
-UI controls
-- Radio buttons (left): select analyte type (strong_acid, weak_acid, strong_base, weak_base).
-- Radio buttons (left, below): select titrant type (strong_base or strong_acid).
-- Sliders (bottom/right):
-  - Analyte Conc (M): initial concentration of the analyte (molarity).
-  - Analyte Vol (mL): starting volume of the analyte (mL).
-  - Titrant Conc (M): concentration of titrant.
-  - log10(Ka) and log10(Kb): pKa/pKb controls (appear only when relevant).
-- Reset button: returns all sliders and selections to their initial defaults.
-- The plotted curve updates immediately as you move sliders or change analyte/titrant types.
-- Colorbar indicates pH value for each point on the titration curve.
+Adjust Ka or Kb (only for weak species)
+- If you select a weak acid, a log₁₀(Ka) slider appears.
+- If you select a weak base, a log₁₀(Kb) slider appears.
+- The slider value represents the exponent:
+  - For example, log₁₀(Ka) = −5 means Ka = 10⁻⁵.
+- Changing Ka or Kb affects:
+  - Buffer region slope
+  - Equivalence-point pH
+  - Overall shape of the titration curve
+
+Interpret the graph
+- X-axis: Volume of titrant added (mL)
+- Y-axis: pH
+- The curve shows:
+  - Initial pH
+  - Buffer region (for weak systems)
+  - Equivalence point
+  - Excess titrant region
+- Points are color-coded by pH, making acidic and basic regions easy to identify.
+- For strong acid–strong base titration, a dashed pH = 7 reference line appears automatically.
+
+Reset the simulation
+- Click the Reset button to return all sliders and selections to their default values.
+- This allows quick comparison between different titration setups.
 
 Example scenarios to try
 - Strong acid (0.1 M HCl, 50 mL) titrated with 0.1 M NaOH.
@@ -119,29 +210,60 @@ Example scenarios to try
 
 ## Program Architecture
 
-The code is structured in two main layers:
+The program is organized into two main layers, each with distinct responsibilities:
 
-1. Calculation layer
-- Function: acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant, analyte_type, titrant_type, Ka, Kb, v_min, v_max, n_points)
-  - Inputs: concentrations (M), volumes (mL), Ka/Kb, analyte/titrant types, and plotting range/resolution.
-  - Outputs: (volumes_array, pH_array)
-  - Responsibilities:
-    - Compute initial moles of analyte.
-    - Iterate over titrant volumes and compute added moles.
-    - Select the correct chemical formula depending on analyte/titrant type (strong/weak).
-    - Compute pH using: strong acid/base formula, Henderson–Hasselbalch equation, or hydrolysis at equivalence.
-    - Apply numeric safeguards for stability.
+1. Calculation Layer
+Function: `acid_base_titration(...)`  
+Purpose: Compute pH values for a range of titrant volumes using chemical principles.  
 
-2. UI & Visualization layer
-- Function: make_titration_app()
-  - Builds Matplotlib figure and axes, scatter plot and line plot, colorbar.
-  - Adds interactive widgets (Slider, radio buttons, reset button). 
-  - Updates the plot dynamically when user changes inputs.
-  -Manages dynamic visibility of Ka/Kb sliders depending on analyte/titrant type
+Inputs: 
+- Analyte concentration and volume  
+- Titrant concentration  
+- Analyte/titrant type (strong/weak acid/base)  
+- Ka or Kb (for weak species)  
+- Titrant volume range and resolution  
 
-Separation of concerns
-- The calculation function is pure (no plotting) so it can be reused or tested independently.
-- UI code is responsible for user interaction and presentation.
+Outputs:
+- Arrays of titrant volumes  
+- Corresponding pH values  
+
+Responsibilities and Principles:
+1. Stoichiometry: Compute initial moles of analyte (moles = concentration × volume).  
+2. Strong acid–strong base: Compute excess H⁺ or OH⁻ after 1:1 neutralization;  
+   pH = −log10([H⁺]) or pH = 14 − pOH.  
+3. Weak acid titration: 
+   - Buffer region: Henderson–Hasselbalch equation:  
+     `pH = pKa + log10([A−]/[HA])`  
+   - Equivalence point: Hydrolysis of conjugate base:  
+     `[OH−] ≈ sqrt(Kb × [A−])`, pH = 14 − pOH.  
+   - Excess titrant: Compute pH from remaining OH⁻.  
+4. Weak base titration: Analogous to weak acid, using pOH and hydrolysis of conjugate acid.  
+5. Same-type combinations (acid + acid, base + base): Approximate total [H⁺] or [OH−] to avoid program errors.  
+6. Numeric safeguards: log inputs, constrain pH to 0–14, and use tolerances near equivalence points.  
+
+---
+
+2. User Interface & Visualization Layer
+Function: `make_titration_app()`  
+Purpose: Provide an interactive interface for exploring titration curves.  
+
+Responsibilities:  
+- Build the Matplotlib figure and axes  
+- Create scatter and line plots for pH vs titrant volume  
+- Add interactive widgets:  
+  - Sliders for concentrations and volume  
+  - Logarithmic Ka/Kb sliders for weak species  
+  - Radio buttons for analyte/titrant selection  
+  - Reset button  
+- Dynamically update the plot when parameters change  
+- Show or hide Ka/Kb sliders depending on analyte/titrant type  
+- Apply color mapping to pH values along the curve  
+
+---
+
+Separation of Concerns
+- The calculation layer is independent of plotting, making it reusable or testable separately.  
+- The UI layer handles user interaction and presentation, keeping the program responsive and educational.
 
 ---
 
