@@ -102,8 +102,6 @@ def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
 
         else:
             pH = 7.0
-
-        # Clip to [0,14] for display
         pH_list.append(float(np.clip(pH, 0.0, 14.0)))
 
     return volumes, np.array(pH_list)
