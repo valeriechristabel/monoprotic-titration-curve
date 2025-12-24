@@ -412,3 +412,4 @@ Additional enhancements include:
 - Extensive debugging to fix slider freezing, curve smoothing, and plotting errors.
 
 This process also involves help with LLM, especially to solve the error part, and make the code well structured. 
+LLM chat : https://copilot.microsoft.com/shares/EBnhyhwfWsr65Yn5EXMwR
