@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, RadioButtons, Button  # tambahkan Button
+from matplotlib.widgets import Slider, RadioButtons, Button  
 
 def acid_base_titration(conc_analyte, vol_analyte_ml, conc_titrant,
                         analyte_type="weak_acid", titrant_type="strong_base",
@@ -79,7 +79,7 @@ def make_titration_app():
     radio_t = RadioButtons(plt.axes([0.03,0.52,0.2,0.12], facecolor=axcolor),
                            ["strong_base","strong_acid"],0)
 
-    # ===== Reset Button =====
+    # Reset Button 
     reset_ax = plt.axes([0.03, 0.42, 0.12, 0.04])
     button_reset = Button(reset_ax, "Reset", color=axcolor, hovercolor='0.9')
     def reset(event):
@@ -88,10 +88,9 @@ def make_titration_app():
         s_concT.reset()
         s_Ka.reset()
         s_Kb.reset()
-        radio_a.set_active(1)  # weak_acid default
-        radio_t.set_active(0)  # strong_base default
+        radio_a.set_active(1) 
+        radio_t.set_active(0)  
     button_reset.on_clicked(reset)
-    # ===== End Reset Button =====
 
     def toggle_Ka_Kb():
         at = radio_a.value_selected

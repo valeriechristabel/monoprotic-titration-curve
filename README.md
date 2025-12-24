@@ -193,7 +193,6 @@ Interpret the graph
   - Initial pH
   - Buffer region (for weak systems)
   - Equivalence point
-  - Excess titrant region
 - Points are color-coded by pH, making acidic and basic regions easy to identify.
 - For strong acid–strong base titration, a dashed pH = 7 reference line appears automatically.
 
@@ -412,4 +411,4 @@ Additional enhancements include:
 - Clear separation between chemical calculations, UI logic, and plotting logic for easier maintenance and explanation.
 - Extensive debugging to fix slider freezing, curve smoothing, and plotting errors.
 
-This process demonstrates the significant effort involved in integrating interactivity, chemical realism, and stable visualization into a single, educational simulator.
+This process also involves help with LLM, especially to solve the error part, and make the code well structured. 
