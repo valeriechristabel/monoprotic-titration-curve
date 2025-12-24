@@ -201,11 +201,6 @@ Reset the simulation
 - Click the Reset button to return all sliders and selections to their default values.
 - This allows quick comparison between different titration setups.
 
-Example scenarios to try
-- Strong acid (0.1 M HCl, 50 mL) titrated with 0.1 M NaOH.
-- Weak acid (pKa ≈ 5) at 0.10 M, 50 mL, titrated with 0.10 M strong base: see buffer region and equivalence pH > 7.
-- Weak base titrated with strong acid: pH starts >7 and approaches lower pH after equivalence.
-
 ---
 
 ## Program Architecture
@@ -286,7 +281,6 @@ Enhancements Added:
 - Color-coded pH mapping, a pH = 7 guide line for strong/strong titrations, and a reset button for usability.
 - Visualization of buffer regions and equivalence points.
 
-
 Difficulties Encountered:
 - Modeling weak acids and bases accurately required chemical knowledge and careful mathematical implementation.
 - Exact equilibrium calculations were slow and complex, making real-time interaction challenging.
@@ -312,11 +306,6 @@ How These Were Resolved:
     - Smoothed weak base + strong acid curves.
     - Adjusted acid + acid and base + base curves to realistic neutral pH.
     - Ensured the reset button worked correctly after multiple revisions.
-
-Outcome:
-- A fully interactive, visually intuitive titration simulator.
-- Accurate representation of strong and weak acid/base titrations, buffer regions, and equivalence points.
-- Demonstrates significant effort in chemical modeling, programming, debugging, and UI design.
 
 ---
 
@@ -388,7 +377,7 @@ To model weak acid and weak base titrations realistically while keeping the prog
 - At the equivalence point, hydrolysis approximations are applied using square-root expressions such as  
   `[OH⁻] ≈ √(Kb × [A⁻])` or `[H⁺] ≈ √(Ka × [BH⁺])`.
 
-These approximations avoid solving complex nonlinear equilibrium equations at every volume step, making the program suitable for interactive use.
+Implementing these calculations was challenging: adding buffer-region and equivalence-point visualization initially caused the figure to freeze or the sliders to become unresponsive. Weak base + strong acid curves were not smooth and required careful debugging and iterative adjustment.  
 
 ---
 
@@ -399,7 +388,7 @@ Several numerical safeguards were implemented:
 - Small tolerance values ensure reliable detection of equivalence points.
 - pH values are clipped to the physically meaningful range of 0–14.
 
-These measures prevent crashes and unphysical outputs when users explore extreme parameter values.
+Despite these measures, errors occurred during implementation: updating the plot sometimes failed, sliders would not respond, and curves could display unrealistic spikes. Each issue required careful step-by-step debugging.
 
 ---
 
@@ -408,9 +397,10 @@ These measures prevent crashes and unphysical outputs when users explore extreme
 To improve visualization quality and performance:
 - The titration curve is color-coded by pH to distinguish acidic, neutral, and basic regions.
 - A pH = 7 reference line is shown for strong acid–strong base titrations.
+- Buffer regions and equivalence points are highlighted on the plot.
 - Plot performance is optimized by updating existing line and scatter objects instead of redrawing the entire plot.
 
-This results in smoother real-time updates when parameters are adjusted.
+Even with these optimizations, ensuring smooth real-time updates while showing all features (buffer region, equivalence point, Ka/Kb sliders) required multiple revisions and careful management of plot objects.
 
 ---
 
@@ -420,5 +410,6 @@ Additional enhancements include:
 - Dynamic visibility of Ka/Kb sliders based on the selected titration type.
 - A reset button to quickly restore default parameters.
 - Clear separation between chemical calculations, UI logic, and plotting logic for easier maintenance and explanation.
+- Extensive debugging to fix slider freezing, curve smoothing, and plotting errors.
 
----
+This process demonstrates the significant effort involved in integrating interactivity, chemical realism, and stable visualization into a single, educational simulator.
