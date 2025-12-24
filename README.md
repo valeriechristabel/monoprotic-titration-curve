@@ -269,31 +269,54 @@ Separation of Concerns
 
 ## Development Process
 
-Goal: Develop an educational, interactive titration simulator that is easy to run, visually intuitive, and allows exploration of different monoprotic acid–base systems.
+Goal:
+- Develop an educational, interactive titration simulator.
+- Ensure it is easy to run, visually intuitive, and allows exploration of various monoprotic acid–base systems.
 
 Initial Implementation:
-The program began as a basic calculation tool with manual input/output. Users had to enter concentrations, volumes, and analyte/titrant types each time. While it produced correct strong/strong titration curves, manual input was inefficient.
+- Started as a basic calculation tool with manual input/output.
+- Users had to enter concentrations, volumes, and analyte/titrant types each time.
+- Produced correct strong/strong titration curves, but manual input was inefficient.
 
-What I added:  
-- Sliders for analyte concentration, analyte volume, and titrant concentration to make the program interactive.  
-- Ka/Kb sliders (logarithmic scale) for weak acids and bases.  
-- Buffer-region calculations for weak acids/bases using the Henderson–Hasselbalch equation.  
-- Equivalence-point hydrolysis calculations ([OH⁻] ≈ √(Kb × [A⁻]) or [H⁺] ≈ √(Ka × [BH⁺])) to model conjugate base/acid behavior.  
+Enhancements Added:
+- Sliders for analyte concentration, analyte volume, and titrant concentration to make the program interactive.
+- Ka/Kb sliders (logarithmic scale) for weak acids and bases.
+- Buffer-region calculations for weak acids/bases using the Henderson–Hasselbalch equation.
+- Equivalence-point hydrolysis calculations ([OH⁻] ≈ √(Kb × [A⁻]) or [H⁺] ≈ √(Ka × [BH⁺])) to model conjugate base/acid behavior.
 - Color-coded pH mapping, a pH = 7 guide line for strong/strong titrations, and a reset button for usability.
+- Visualization of buffer regions and equivalence points.
 
-Why it was challenging:  
-- Modeling weak acids and bases accurately requires chemical knowledge and careful math.  
-- Exact equilibrium calculations are slow and complex, making real-time interaction difficult.  
-- Numerical issues such as log(0) or tiny equivalence-point concentrations could cause errors.
 
-How I solved it:  
-- Implemented approximations: Henderson–Hasselbalch for buffer regions, and square-root hydrolysis for equivalence points.  
-- Added numerical safeguards to ensure stable calculations:
-  - `safe_log10` prevents errors when taking the logarithm of very small numbers or zero.
-  - Small tolerances help accurately detect the equivalence point despite tiny rounding differences.
-  - pH values are clipped to the realistic range of 0–14 to avoid unphysical results.
-- Instead of clearing and redrawing the entire graph each time a slider is moved, the program updates the existing scatter points and line with the new data.
-- This keeps the UI responsive even when many points are plotted, making the titration curve update smoothly in real time.
+Difficulties Encountered:
+- Modeling weak acids and bases accurately required chemical knowledge and careful mathematical implementation.
+- Exact equilibrium calculations were slow and complex, making real-time interaction challenging.
+- Numerical issues such as log(0) or extremely small equivalence-point concentrations caused errors.
+- Many bugs appeared during implementation, especially with buffer regions: sliders sometimes became unresponsive.
+- Ka/Kb sliders would appear incorrectly (e.g., showing both weak acid and weak base simultaneously).
+- Weak base + strong acid titration curves were initially not smooth.
+- Acid + acid and base + base titration curves were unrealistic at first and had to be adjusted to reflect neutral pH behavior.
+- Adding or revising functionality occasionally caused the reset button to disappear, requiring careful readjustment.
+
+How These Were Resolved:
+- Implemented approximations for faster calculations:
+    - Henderson–Hasselbalch for buffer regions.
+    - Square-root hydrolysis for equivalence points.
+- Added numerical safeguards:
+    - safe_log10 to prevent errors from very small numbers or zero.
+    - Small tolerances to detect the equivalence point accurately despite rounding errors.
+    - Clipped pH values to the realistic range of 0–14.
+- Updated scatter points and line data dynamically instead of redrawing the whole graph, keeping the UI responsive.
+- Iteratively debugged and revised:
+    - Corrected slider behavior for buffer regions.
+    - Fixed Ka/Kb slider visibility issues.
+    - Smoothed weak base + strong acid curves.
+    - Adjusted acid + acid and base + base curves to realistic neutral pH.
+    - Ensured the reset button worked correctly after multiple revisions.
+
+Outcome:
+- A fully interactive, visually intuitive titration simulator.
+- Accurate representation of strong and weak acid/base titrations, buffer regions, and equivalence points.
+- Demonstrates significant effort in chemical modeling, programming, debugging, and UI design.
 
 ---
 
@@ -301,21 +324,21 @@ How I solved it:
 
 Primary References Used:
 - Textbooks and Standard Chemistry References:
-  - Cengage Chemistry Textbooks: Acid–base equilibria, neutralization stoichiometry, Henderson–Hasselbalch equation, hydrolysis approximations.  
-  - Wikipedia: "Acid–base reaction", "Henderson–Hasselbalch equation", "Titration (chemistry)".  
+  - Cengage Chemistry Textbooks: Acid–base equilibria, neutralization stoichiometry, Henderson–Hasselbalch equation, hydrolysis approximations.   
 
-- ChatGPT (GPT-4):
+LLM:
   - Used as a development aid to suggest calculation approaches, numerical safeguards, UI improvements, and code structuring.  
   - All suggestions were reviewed, adapted, and implemented with added numeric stability and user interface enhancements.  
-  - GitHub Copilot: Assisted in code completion, suggested syntax and helper functions, especially for plotting and sliders. All code was reviewed and modified by the author for chemical accuracy.
+  - GitHub Copilot: Assisted in making readme file
 
 Modifications and Original Contributions: 
 - Code Implementation: The actual calculation function (`acid_base_titration(...)`)
 - Numerical Safeguards: Added `safe_log10`, small equivalence tolerances, and pH clipping for stability.  
 - Hydrolysis Approximations: Implemented a square-root approximation for weak acid/base equivalence points to simplify calculations while keeping chemical realism.  
+- Add the buffer region area, and the equivalence point
 
 Summary: 
-The theoretical foundations come from standard chemistry references, while all code-level implementations, UI design, and numerical improvements are original contributions. ChatGPT was used only as an advisory tool to suggest strategies.
+The theoretical foundations come from standard chemistry references, while all code-level implementations, UI design, and numerical improvements are original contributions. LLM was used only as an advisory tool to suggest strategies.
 
 ---
 
